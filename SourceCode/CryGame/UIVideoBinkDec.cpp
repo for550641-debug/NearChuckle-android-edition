@@ -4,6 +4,7 @@
 #include <ICryPak.h>
 #include "UIVideoBinkDec.h"
 #include <BinkDecoder.h>
+#include <stdint.h>
 
 enum EPlayerCmd : int
 {
@@ -131,9 +132,15 @@ CUIVideoBinkDecoder::CUIVideoBinkDecoder(const char* aliasName)
 	m_aliasName = aliasName;
 }
 
+#ifndef LINUX64
+signed char BinkDecAudioCallback(CS_STREAM* pStream, void* pBuffer, int nLength, int nParam)
+{
+	MoviePlayerData* player = (MoviePlayerData*)(uintptr_t)nParam;
+#else
 signed char BinkDecAudioCallback(CS_STREAM* pStream, void* pBuffer, int nLength, void* nParam)
 {
 	MoviePlayerData* player = (MoviePlayerData*)nParam;
+#endif
 	int16_t* audioBuffer = (int16_t*)pBuffer;
 	memset(audioBuffer, -1, nLength);
 	if (!player)
@@ -181,9 +188,15 @@ bool CUIVideoBinkDecoder::Init(const char* pathToVideo, bool needSound)
 			{
 				m_player->trackIndex = 0;
 				m_player->binkInfo = Bink_GetAudioTrackDetails(m_player->binkHandle, m_player->trackIndex);
+#ifndef LINUX64
+				m_audioStream = CS_Stream_Create(BinkDecAudioCallback,
+					m_player->binkInfo.idealBufferSize, 0,
+					m_player->binkInfo.sampleRate, (int)(uintptr_t)m_player);
+#else
 				m_audioStream = CS_Stream_Create(BinkDecAudioCallback,
 					m_player->binkInfo.idealBufferSize, 0,
 					m_player->binkInfo.sampleRate, m_player);
+#endif
 			}
 		}
 	}
