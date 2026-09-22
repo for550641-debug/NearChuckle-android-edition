@@ -58,24 +58,15 @@ void CXGame::SetConfigToActionMap(const char *pszActionName, ...)
 	ActionInfo &Info=It->second;
 	va_list v;
 	va_start(v, pszActionName);            
-#if defined(LINUX64)
 	char *sActionMapName=va_arg(v, char*);
 	while (*sActionMapName)
 	{
 		Info.vecSetToActionMap.push_back(string(sActionMapName));
 		sActionMapName=va_arg(v, char*);
 	}
-#else
-	char *sActionMapName=*(char**)v;
-
-	while (*sActionMapName)
-	{
-		Info.vecSetToActionMap.push_back(string(sActionMapName));
-		sActionMapName=*(char**)(v+=sizeof(char*));
-	}
-#endif
 	va_end(v);
 }
+
 
 //////////////////////////////////////////////////////////////////////
 void CXGame::SetCommonKeyBindings(IActionMap *pMap)
