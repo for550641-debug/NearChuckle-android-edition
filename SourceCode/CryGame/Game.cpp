@@ -566,9 +566,18 @@ bool CXGame::Init(struct ISystem *pSystem,bool bDedicatedSrv,bool bInEditor,cons
 	
 	// init subsystems
 #ifndef _XBOX
-	m_pServerSnooper=m_pNetwork->CreateServerSnooper(this);
-	m_pNETServerSnooper=m_pNetwork->CreateNETServerSnooper(this);
-	m_pRConSystem=m_pNetwork->CreateRConSystem();
+	if (m_pNetwork)
+	{
+		m_pServerSnooper=m_pNetwork->CreateServerSnooper(this);
+		m_pNETServerSnooper=m_pNetwork->CreateNETServerSnooper(this);
+		m_pRConSystem=m_pNetwork->CreateRConSystem();
+	}
+	else
+	{
+		m_pServerSnooper=NULL;
+		m_pNETServerSnooper=NULL;
+		m_pRConSystem=NULL;
+	}
 #endif
 	m_pWeaponSystemEx = new CWeaponSystemEx();
 	m_pVehicleSystem = new CVehicleSystem();
