@@ -1299,14 +1299,18 @@ bool CSystem::Init( const SSystemInitParams &params )
 	//////////////////////////////////////////////////////////////////////////
 	// NETWORK
 	//////////////////////////////////////////////////////////////////////////
-	if (!params.bPreview)
+		if (!params.bPreview)
 	{
 		CryLogAlways("Network initialization");
-		InitNetwork();
-
-		m_pNetwork->SetLocalIP((char *)(CmdlineSink.m_sLocalIP.c_str()));
-	}
-	//////////////////////////////////////////////////////////////////////////
+		if (InitNetwork() && m_pNetwork)
+		{
+			m_pNetwork->SetLocalIP((char *)(CmdlineSink.m_sLocalIP.c_str()));
+		}
+		else
+		{
+			CryLogAlways("Network initialization failed - continuing without network (single-player only)");
+		}
+	}//////////////////////////////////////////////////////////////////////////
 	// PHYSICS
 	//////////////////////////////////////////////////////////////////////////
 	//if (!params.bPreview)
